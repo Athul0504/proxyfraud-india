@@ -1,43 +1,31 @@
 import React from 'react';
-import Header from '../components/Header';
 import OverviewCards from '../components/OverviewCards';
 import MainRiskPanel from '../components/MainRiskPanel';
-import RiskSignals from '../components/RiskSignals';
-import DigitalTrustPanel from '../components/DigitalTrustPanel';
-import ApplicantRiskTable from '../components/ApplicantRiskTable';
 import RecentAlerts from '../components/RecentAlerts';
+import ApplicantRiskTable from '../components/ApplicantRiskTable';
 
-export default function DashboardPage() {
+export default function DashboardPage({ onSelectAccount }) {
   return (
-    <div className="dashboard-container">
-      {/* 1. TOP HEADER */}
-      <Header />
-
-      {/* 2. OVERVIEW CARDS */}
+    <div className="p-6 space-y-6">
+      {/* 1. OVERVIEW METRIC CARDS */}
       <OverviewCards />
 
-      {/* MAIN LAYOUT GRID */}
-      <div className="dashboard-main-grid">
-        {/* LEFT COLUMN: Main Risk Panel, Risk Signals, Applicant Risk Table */}
-        <div className="grid-column-left">
-          {/* 3. MAIN RISK PANEL */}
-          <MainRiskPanel />
-
-          {/* 4. RISK SIGNALS */}
-          <RiskSignals />
-
-          {/* 6. APPLICANT RISK TABLE */}
-          <ApplicantRiskTable />
+      {/* 2. MAIN DASHBOARD GRID */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* LEFT/CENTER: MAIN RISK CASE INVESTIGATION (C126 CASE VIEW) */}
+        <div className="lg:col-span-2 space-y-6">
+          <MainRiskPanel accountId="C126" />
         </div>
 
-        {/* RIGHT COLUMN: Digital Trust Panel & Recent Alerts */}
-        <div className="grid-column-right">
-          {/* 5. DIGITAL TRUST PANEL */}
-          <DigitalTrustPanel />
-
-          {/* 7. RECENT ALERTS */}
+        {/* RIGHT: REALTIME BEHAVIORAL ALERTS LOG */}
+        <div className="lg:col-span-1">
           <RecentAlerts />
         </div>
+      </div>
+
+      {/* 3. ACCOUNTS DIRECTORY MATRIX TABLE */}
+      <div className="pt-2">
+        <ApplicantRiskTable onSelectAccount={onSelectAccount} />
       </div>
     </div>
   );

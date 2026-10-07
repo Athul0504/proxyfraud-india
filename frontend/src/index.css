@@ -1,45 +1,4 @@
-:root {
-  /* Light Enterprise SOC Palette (Stitch Inspired) */
-  --bg-dark: #f1f5f9;
-  --bg-body: #f8fafc;
-  --bg-card: #ffffff;
-  --bg-card-hover: #f8fafc;
-  --bg-card-inner: #f8fafc;
-  --bg-sidebar: #f8fafc;
-  
-  --primary: #0284c7;
-  --primary-hover: #0369a1;
-  --primary-dark: #0f172a;
-  --primary-glow: rgba(2, 132, 199, 0.1);
-  
-  --accent-cyan: #0284c7;
-  --accent-blue: #2563eb;
-  
-  --text-main: #0f172a;
-  --text-muted: #475569;
-  --text-subtle: #64748b;
-  
-  --border-color: #cbd5e1;
-  --border-light: #e2e8f0;
-  --border-accent: rgba(2, 132, 199, 0.4);
-  
-  --success: #16a34a;
-  --success-glow: #dcfce7;
-  --warning: #d97706;
-  --warning-glow: #fef3c7;
-  --danger: #dc2626;
-  --danger-glow: #fee2e2;
-  --critical: #dc2626;
-  --critical-glow: #fee2e2;
-  --info: #0284c7;
-  --info-glow: #e0f2fe;
-  
-  --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-mono: 'JetBrains Mono', 'Fira Code', 'Roboto Mono', monospace;
-  
-  --panel-radius: 4px;
-  --panel-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
-}
+@import "tailwindcss";
 
 * {
   box-sizing: border-box;
@@ -48,22 +7,58 @@
 }
 
 body {
-  background-color: var(--bg-dark);
-  color: var(--text-main);
-  font-family: var(--font-sans);
-  line-height: 1.45;
+  background-color: #070a13;
+  color: #f8fafc;
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   min-height: 100vh;
+  overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
 }
 
-#root {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
+/* Custom Scrollbar for SOC Interface */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #070a13;
+}
+::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #334155;
 }
 
-code, pre {
-  font-family: var(--font-mono);
+/* Glass & Card System */
+.soc-card {
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.95) 0%, rgba(11, 17, 32, 0.98) 100%);
+  border: 1px solid rgba(30, 41, 59, 0.8);
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.5);
+  border-radius: 0.75rem;
 }
 
+.soc-card-hover {
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.95) 0%, rgba(11, 17, 32, 0.98) 100%);
+  border: 1px solid rgba(30, 41, 59, 0.8);
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.5);
+  border-radius: 0.75rem;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
 
+.soc-card-hover:hover {
+  border-color: rgba(56, 189, 248, 0.4);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 25px -4px rgba(0, 0, 0, 0.6), 0 0 15px rgba(56, 189, 248, 0.1);
+}
+
+/* Pulse animation for critical alerts */
+@keyframes soc-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(1.05); }
+}
+
+.animate-soc-pulse {
+  animation: soc-pulse 2s infinite ease-in-out;
+}

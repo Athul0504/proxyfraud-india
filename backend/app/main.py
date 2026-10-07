@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.database import init_db
-from app.routers import digital_trust, financial_fraud, fraud_dataset, unified_risk
+from app.routers import digital_trust, financial_fraud, fraud_dataset, unified_risk, proxybank_router
 
 app = FastAPI(
     title="ProxyShield India API",
@@ -23,6 +23,7 @@ app.include_router(digital_trust.router)
 app.include_router(financial_fraud.router)
 app.include_router(fraud_dataset.router)
 app.include_router(unified_risk.router)
+app.include_router(proxybank_router.router)
 
 
 @app.on_event("startup")

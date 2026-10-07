@@ -12,27 +12,24 @@ export default function Navbar({ activeTab, setActiveTab }) {
             </svg>
           </div>
           <div className="brand-text-block">
-            <span className="brand-name">ProxyShield</span>
-            <span className="brand-sub-tag">INDIA | SOC RISK</span>
+            <span className="brand-name">ProxyShield India</span>
+            <span className="brand-sub-tag">FRAUD INVESTIGATION SYSTEM</span>
           </div>
-          <span className="soc-node-pill">SOC NODE: WEST-01 // LIVE</span>
         </div>
 
         <div className="navbar-center-search">
           <div className="nav-search-box">
             <span className="search-icon">🔍</span>
-            <input type="text" placeholder="Search PAN, mobile, ID..." className="nav-search-input" />
-            <span className="search-shortcut">⌘K</span>
+            <input type="text" placeholder="Search PAN, Mobile, Aadhaar, Device Hash..." className="nav-search-input" />
           </div>
         </div>
 
         <div className="navbar-right-meta">
-          <span className="threat-level-tag">@THREAT LEVEL: ELEVATED</span>
           <div className="user-profile-badge">
             <span className="user-avatar-dot"></span>
             <div className="user-info">
-              <div className="user-name font-bold">Dr. A. Verma</div>
-              <div className="user-role font-mono">Lead Risk Officer</div>
+              <div className="user-name font-bold">Fraud Investigator</div>
+              <div className="user-role font-mono">L2 Risk Desk</div>
             </div>
           </div>
         </div>
@@ -44,7 +41,7 @@ export default function Navbar({ activeTab, setActiveTab }) {
             className={`nav-btn ${activeTab === 'dashboard' ? 'active' : ''}`}
             onClick={() => setActiveTab('dashboard')}
           >
-            Risk Dashboard
+            Dashboard
           </button>
           <button 
             className={`nav-btn ${activeTab === 'unified-risk' ? 'active' : ''}`}
@@ -81,5 +78,6 @@ export default function Navbar({ activeTab, setActiveTab }) {
     </header>
   );
 }
+
 
 

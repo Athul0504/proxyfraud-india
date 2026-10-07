@@ -261,3 +261,99 @@ export async function getUnifiedRiskApplicant(applicantId) {
 
 
 
+
+
+// --- ProxyShield Step 8 API Integration Helpers ---
+
+export async function getDashboardSummary() {
+  try {
+    const response = await fetch(`${API_BASE_URL}/dashboard`);
+    if (!response.ok) throw new Error("ProxyShield backend is unavailable.");
+    return await response.json();
+  } catch (error) {
+    console.error("Dashboard API error:", error);
+    throw error;
+  }
+}
+
+export async function getAccounts(filters = {}) {
+  try {
+    const query = new URLSearchParams();
+    if (filters.account_id) query.append("account_id", filters.account_id);
+    if (filters.risk_level && filters.risk_level !== "ALL") query.append("risk_level", filters.risk_level);
+    if (filters.pattern && filters.pattern !== "ALL") query.append("pattern", filters.pattern);
+
+    const url = `${API_BASE_URL}/accounts${query.toString() ? "?" + query.toString() : ""}`;
+    const response = await fetch(url);
+    if (!response.ok) throw new Error("ProxyShield backend is unavailable.");
+    return await response.json();
+  } catch (error) {
+    console.error("Accounts API error:", error);
+    throw error;
+  }
+}
+
+export async function getAccountDetail(accountId) {
+  try {
+    const response = await fetch(`${API_BASE_URL}/accounts/${accountId}`);
+    if (!response.ok) throw new Error(`ProxyShield backend error for account ${accountId}`);
+    return await response.json();
+  } catch (error) {
+    console.error(`Account detail error for ${accountId}:`, error);
+    throw error;
+  }
+}
+
+export async function createAccount(accountData) {
+  try {
+    const response = await fetch(`${API_BASE_URL}/accounts/create`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(accountData),
+    });
+    if (!response.ok) throw new Error("Failed to create synthetic account.");
+    return await response.json();
+  } catch (error) {
+    console.error("Create account error:", error);
+    throw error;
+  }
+}
+
+export async function advanceSimulation(accountId = "C126") {
+  try {
+    const response = await fetch(`${API_BASE_URL}/simulation/advance`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ account_id: accountId }),
+    });
+    if (!response.ok) throw new Error("Failed to advance simulation.");
+    return await response.json();
+  } catch (error) {
+    console.error("Advance simulation error:", error);
+    throw error;
+  }
+}
+
+export async function placeLoanOnHold(accountId) {
+  try {
+    const response = await fetch(`${API_BASE_URL}/accounts/${accountId}/hold`, {
+      method: "POST",
+    });
+    if (!response.ok) throw new Error(`Failed to place loan on hold for ${accountId}`);
+    return await response.json();
+  } catch (error) {
+    console.error(`Hold error for ${accountId}:`, error);
+    throw error;
+  }
+}
+
+export async function getFraudAlerts() {
+  try {
+    const response = await fetch(`${API_BASE_URL}/alerts`);
+    if (!response.ok) throw new Error("ProxyShield backend is unavailable.");
+    return await response.json();
+  } catch (error) {
+    console.error("Fraud alerts error:", error);
+    throw error;
+  }
+}

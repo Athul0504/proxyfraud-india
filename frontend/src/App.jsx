@@ -1,104 +1,101 @@
 import React, { useState, useEffect } from 'react';
-import Navbar from './components/Navbar';
-import DigitalTrustPage from './pages/DigitalTrustPage';
-import FinancialFraudPage from './pages/FinancialFraudPage';
-import FraudNetworkPage from './pages/FraudNetworkPage';
-import IdentityForensicsPage from './pages/IdentityForensicsPage';
-import UnifiedRiskPage from './pages/UnifiedRiskPage';
+import Sidebar from './components/Sidebar';
+import HeaderNav from './components/HeaderNav';
 import DashboardPage from './pages/DashboardPage';
-import { checkBackendHealth } from './services/api';
-import './App.css';
+import AccountsPage from './pages/AccountsPage';
+import AlertsPage from './pages/AlertsPage';
+import LoanMonitoringPage from './pages/LoanMonitoringPage';
+import SimulationPage from './pages/SimulationPage';
+import InvestigationPage from './pages/InvestigationPage';
+import SettingsPage from './pages/SettingsPage';
+import { advanceSimulation, getDashboardSummary } from './services/api';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
-  const [backendStatus, setBackendStatus] = useState('Checking...');
+  const [selectedAccountId, setSelectedAccountId] = useState('C126');
+  const [simDay, setSimDay] = useState(0);
+  const [advancing, setAdvancing] = useState(false);
+
+  const fetchSimDay = async () => {
+    try {
+      const data = await getDashboardSummary();
+      if (data && data.current_simulation_day !== undefined) {
+        setSimDay(data.current_simulation_day);
+      }
+    } catch (err) {
+      console.error('Error fetching dashboard summary:', err);
+    }
+  };
 
   useEffect(() => {
-    checkBackendHealth()
-      .then((data) => {
-        if (data.status === 'healthy' || data.status === 'online') {
-          setBackendStatus('Connected 🟢');
-        } else {
-          setBackendStatus('Disconnected 🔴');
-        }
-      })
-      .catch(() => setBackendStatus('Disconnected 🔴'));
+    fetchSimDay();
+    const handleSelectAccount = (e) => {
+      if (e.detail && e.detail.account_id) {
+        setSelectedAccountId(e.detail.account_id);
+        setActiveTab('investigation');
+      }
+    };
+    const handleRefresh = () => fetchSimDay();
+
+    window.addEventListener('proxyshield-select-account', handleSelectAccount);
+    window.addEventListener('proxyshield-refresh', handleRefresh);
+    return () => {
+      window.removeEventListener('proxyshield-select-account', handleSelectAccount);
+      window.removeEventListener('proxyshield-refresh', handleRefresh);
+    };
   }, []);
 
+  const handleSelectAccount = (accId) => {
+    setSelectedAccountId(accId);
+    setActiveTab('investigation');
+  };
+
+  const handleAdvanceSimulation = async () => {
+    if (advancing || simDay >= 120) return;
+    setAdvancing(true);
+    try {
+      await advanceSimulation('C126');
+      await fetchSimDay();
+      window.dispatchEvent(new CustomEvent('proxyshield-refresh'));
+    } catch (err) {
+      console.error('Error advancing simulation:', err);
+    } finally {
+      setAdvancing(false);
+    }
+  };
+
   return (
-    <div className="app-shell-container">
-      {/* LEFT SOC TELEMETRY SIDEBAR */}
-      <aside className="telemetry-sidebar">
-        <div className="sidebar-top">
-          <div className="sidebar-header-title">SOC TELEMETRY // L1</div>
-          
-          <div className="sidebar-metric-box">
-            <div className="metric-label-row">
-              <span>ACTIVE QUERIES</span>
-              <span className="mono-val">4,832/s</span>
-            </div>
-            <div className="progress-bar-bg"><div className="progress-fill cyan" style={{ width: '74%' }}></div></div>
-          </div>
+    <div className="flex min-h-screen bg-slate-950 text-slate-100 font-sans selection:bg-sky-500 selection:text-white">
+      {/* 1. SIDEBAR NAVIGATION */}
+      <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
 
-          <div className="sidebar-metric-box mt-2">
-            <div className="metric-label-row">
-              <span>UPI RAIL ANOMALY</span>
-              <span className="mono-val text-danger">+14.2%</span>
-            </div>
-            <div className="progress-bar-bg"><div className="progress-fill danger" style={{ width: '88%' }}></div></div>
-          </div>
+      {/* 2. MAIN CONTENT AREA */}
+      <div className="flex-1 flex flex-col min-w-0 overflow-y-auto">
+        {/* TOP HEADER NAV */}
+        <HeaderNav
+          activeTab={activeTab}
+          simDay={simDay}
+          advancing={advancing}
+          onAdvanceSimulation={handleAdvanceSimulation}
+          onCreateAccountClick={() => setActiveTab('accounts')}
+          onSearch={(query) => {
+            if (query && activeTab !== 'accounts') {
+              setActiveTab('accounts');
+            }
+          }}
+        />
 
-          <div className="sidebar-section-title mt-4">OPERATIONS</div>
-          <nav className="sidebar-nav-list">
-            <button className="sidebar-nav-btn active">
-              <span className="icon">⚙️</span> Live Feeds
-            </button>
-            <button className="sidebar-nav-btn">
-              <span className="icon">⚖️</span> Enforcement Rules
-            </button>
-            <button className="sidebar-nav-btn">
-              <span className="icon">📋</span> Audit Logs
-            </button>
-            <button className="sidebar-nav-btn">
-              <span className="icon">🌐</span> API Gateways
-            </button>
-          </nav>
-        </div>
-
-        <div className="sidebar-bottom">
-          <div className="sidebar-status-box">
-            <div className="status-title">LATENCY ENGINE</div>
-            <div className="status-sub mono-val">19ms (MUM-B1)</div>
-            <div className="status-ver mono-val">v6.19-STABLE</div>
-          </div>
-        </div>
-      </aside>
-
-      {/* MAIN RIGHT CONTENT AREA */}
-      <div className="app-main-layout">
-        <Navbar activeTab={activeTab} setActiveTab={setActiveTab} />
-        
-        <div className="backend-banner">
-          <span>Backend API Status: <strong>{backendStatus}</strong></span>
-          <span className="api-url-hint">(FastAPI running on http://localhost:8000)</span>
-          <span className="regulatory-tag">REGULATORY COMPLIANCE: RBI/AML-2026-V2</span>
-        </div>
-
-        <main className="main-content">
-          {activeTab === 'dashboard' && <DashboardPage />}
-          {activeTab === 'unified-risk' && <UnifiedRiskPage />}
-          {activeTab === 'digital-trust' && <DigitalTrustPage />}
-          {activeTab === 'financial-fraud' && <FinancialFraudPage />}
-          {activeTab === 'fraud-network' && <FraudNetworkPage />}
-          {activeTab === 'identity-forensics' && <IdentityForensicsPage />}
+        {/* VIEW CONTAINER */}
+        <main className="flex-1 pb-12">
+          {activeTab === 'dashboard' && <DashboardPage onSelectAccount={handleSelectAccount} />}
+          {activeTab === 'accounts' && <AccountsPage onSelectAccount={handleSelectAccount} />}
+          {activeTab === 'alerts' && <AlertsPage onSelectAccount={handleSelectAccount} />}
+          {activeTab === 'loans' && <LoanMonitoringPage onSelectAccount={handleSelectAccount} />}
+          {activeTab === 'simulation' && <SimulationPage />}
+          {activeTab === 'investigation' && <InvestigationPage selectedAccountId={selectedAccountId} />}
+          {activeTab === 'settings' && <SettingsPage />}
         </main>
-
-        <footer className="footer">
-          <p>ProxyShield India &copy; Executive Fraud Risk Intelligence & Cyber Defense Dashboard</p>
-        </footer>
       </div>
     </div>
   );
 }
-
-
